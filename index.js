@@ -95,7 +95,7 @@ class Booking {
     }
 
     get fee(){
-        return 0;
+        return Math.floor(this.room.rate * (1 - this.discount /100) * (1- this.room.discount / 100));
     }
 }
 

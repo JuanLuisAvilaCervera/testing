@@ -106,3 +106,16 @@ describe("Funciones rooms", () => {
     })
         
 })
+
+describe("Funciones de bookings", () => {
+    it("get fee: gives correct fee", () => {
+
+        const booking = new Booking('Booking 1', 'email@gmail.com', new Date(2022, 1, 1), new Date(2022, 1, 4), 12, {
+            name: 'Room 121',
+            rate: 2000,
+            discount: '22'
+        })
+
+        expect(booking.fee).toBe(1372);
+    })
+})
