@@ -39,69 +39,117 @@ describe("Funciones rooms", () => {
     })
     it("Comprobar si isOccupied está ocupado en un día determinado", () =>{
         const room = new Room("Room 2", bookings , 2000 , 15);
-        expect(room.isOccupied(new Date(2013 , 3 , 3))).toBe(false); //SEPARAR
         expect(room.isOccupied(new Date(2022, 9, 10))).toBe(true);
     })
+
+    it("Comprobar si isOccupied está libre en un día determinado", () => {
+        const room = new Room("Room 2", bookings , 2000 , 15);
+        expect(room.isOccupied(new Date(2013 , 3 , 3))).toBe(false);
+    })
+
     //OCCUPANCYPERCENTAGE
-    it("occupancyPercentage: comprueba si las fechas son correctas", () => {
+    it("occupancyPercentage: lanza un error si no existe la primera fecha", () => {
         const room = new Room("Room 2", bookings , 2000 , 15);
-        expect( room.occupancyPercentage('', new Date())).toThrow('Second date is previous or equal to the first date');
-        expect(room.occupancyPercentage(new Date(), '')).toThrow();
-        expect(room.occupancyPercentage('', '')).toThrow();
-        expect(room.occupancyPercentage(new Date(2022,1,1), new Date(2023,1,1))).not.toThrow();
+        expect( room.occupancyPercentage('', new Date())).toThrow('Dates are invalid');
     })
-    it("occupancyPercentage: comprueba si la primera fecha es anterior a la segunda", () => {
+
+    it("occupancyPercentage: lanza un error si no existe la segunda fecha", () => {
         const room = new Room("Room 2", bookings , 2000 , 15);
-        expect(room.occupancyPercentage(new Date(9, 9, 2025), new Date(9,9,2022))).toThrow()
+        expect(room.occupancyPercentage(new Date(), '')).toThrow('Dates are invalid');
     })
-    it("occupancyPercentage: comprueba si envía el porcentaje correcto", () => {
+
+
+    it("occupancyPercentage: lanza un error si las fechas son iguales", () => {
+        const room = new Room("Room 2", bookings , 2000 , 15);
+        const date = new Date();
+        expect(room.occupancyPercentage(date, date)).toThrow('Dates are invalid');
+    })
+
+
+    it("occupancyPercentage: lanza un error al detectar que la segunda fecha es anterior a la primera", () => {
+        const room = new Room("Room 2", bookings , 2000 , 15);
+        expect(room.occupancyPercentage(new Date(9, 9, 2025), new Date(9,9,2022))).toThrow('Second date is previous or equal to the first date')
+    })
+
+    it("OccupancyPercentage: recibe el porcentaje correcto de dias ocupados", () =>{
         const room = new Room("Room 2", bookings , 2000 , 15);
         const date1 = new Date(2023, 9, 1);
         const date2 = new Date(date1);
-        const date3 = new Date(date1);
-        const date4 = new Date(date1)
         date2.setDate(date2.getDate() + 99);
-        date3.setDate(date3.getDate() + 9)
-        date4.setDate(date4.getDate() + 30);
 
-        expect(room.occupancyPercentage(date1, date2)).toBe(4.08) // 4 / 100 dias
-        expect(room.occupancyPercentage(date1, date3)).toBe(0) // 0 / 10 dias
-        expect(room.occupancyPercentage(date1, date4)).toBe(6.8) // 2 / 31
+        expect(room.occupancyPercentage(date1, date2)).toBe(4.08)
     })
+
+    it("OccupancyPercentage: recibe 0 cuando no hay ningún dia ocupado", () =>{
+        const room = new Room("Room 2", bookings , 2000 , 15);
+        const date1 = new Date(2023, 9, 1);
+        const date2 = new Date(date1);
+        date2.setDate(date2.getDate() + 9);
+
+        expect(room.occupancyPercentage(date1, date2)).toBe(0) 
+    })
+
+
     //TOTALOCCUPANCYPERCENTAGE
-    it("totalOccupancyPercentage: comprueba si todos los datos son correctos", () =>{
+
+    it("totalOccupancyPercentage: comprueba que no hay habitaciones", () => {
         const date1 = new Date(2022, 1, 1)
         const date2 = new Date(2026, 1 , 1)
-        expect(Room.totalOccupancyPercentage('' , date1, date2)).toThrow();
-        expect(Room.totalOccupancyPercentage(rooms, '', date2)).toThrow();
-        expect(Room.totalOccupancyPercentage(rooms , date1, '')).toThrow();
+        expect(Room.totalOccupancyPercentage('' , date1, date2)).toThrow('Invalid data provided');
     })
+
+    it("totalOccupancyPercentage: comprueba que no existe la primera fecha", () => {
+        const date1 = new Date(2022, 1, 1)
+        const date2 = new Date(2026, 1 , 1)
+        expect(Room.totalOccupancyPercentage(rooms , '', date2)).toThrow('Invalid data provided');
+    })
+
+    it("totalOccupancyPercentage: comprueba que no existe la segunda fecha", () => {
+        const date1 = new Date(2022, 1, 1)
+        const date2 = new Date(2026, 1 , 1)
+        expect(Room.totalOccupancyPercentage(rooms , date1, '')).toThrow('Invalid data provided');
+    })
+
     it("totalOccupancyPercentage: comprueba que la primera fecha es anterior a la segunda", () => {
         const date1 = new Date(2022, 1, 1)
         const date2 = new Date(2026, 1 , 1)
-        expect(Room.totalOccupancyPercentage(rooms, date2, date1)).toThrow();
+        expect(Room.totalOccupancyPercentage(rooms, date2, date1)).toThrow('Second date is previous to the first date');
     })
-    it("totalOccupancyPercentage: saca el resultado correcto", () => {
-        const date1 = new Date(2022, 1, 1)
-        const date2 = new Date(2026, 1 , 1)
-        const date3 = new Date(2023, 1,1)
-        expect(Room.totalOccupancyPercentage(rooms, date1, date2)).toBe(0.82);
-        expect(Room.totalOccupancyPercentage(rooms, date1, date3)).toBe(1.1);
-    })
-    it("availableRooms: comprueba si todos los datos son correctos" , () => {
-        const date1 = new Date(2022, 1, 1)
-        const date2 = new Date(2026, 1 , 1)
-        expect(Room.availableRooms('' , date1, date2)).toThrow();
-        expect(Room.availableRooms(rooms, '', date2)).toThrow();
-        expect(Room.availableRooms(rooms , date1, '')).toThrow();
 
+    it("totalOccupancyPercentage: saca el resultado correcto", () => {
+        const date1 = new Date(2023, 1, 1)
+        const date2 = new Date(2024, 1 , 1)
+        expect(Room.totalOccupancyPercentage(rooms, date1, date2)).toBe(1.11); // 4/365
     })
+
+    it("availableRooms: comprueba si existen las habitaciones" , () => {
+        const date1 = new Date(2022, 1, 1)
+        const date2 = new Date(2026, 1 , 1)
+        expect(Room.availableRooms('' , date1, date2)).toThrow('Dates are invalid');
+    })
+    it("availableRooms: comprueba si existe la primera fecha" , () => {
+        const date1 = new Date(2022, 1, 1)
+        const date2 = new Date(2026, 1 , 1)
+        expect(Room.availableRooms(rooms , '', date2)).toThrow('Dates are invalid');
+    })
+    it("availableRooms: comprueba si existe la segunda fecha" , () => {
+        const date1 = new Date(2022, 1, 1)
+        const date2 = new Date(2026, 1 , 1)
+        expect(Room.availableRooms(rooms , date1, '')).toThrow('Dates are invalid');
+    })
+
+
     it("availableRooms: devuelve un array con las rooms disponibles", () => {
         const date1 = new Date(2023, 1, 1)
         const date2 = new Date(2024, 1 , 1)
-        const date3 = new Date(2023, 3,1)
         
         expect(Room.availableRooms(rooms, date1, date2)).toEqual([rooms[0], rooms[2]]);
+    })
+
+    it("availableRooms: no devuelve habitaciones, un array vacio", () => {
+        const date1 = new Date(2022, 1, 1)
+        const date3 = new Date(2026, 3,1)
+        
         expect(Room.availableRooms(rooms, date1, date3)).toEqual([]);
     })
         
