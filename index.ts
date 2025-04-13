@@ -2,18 +2,18 @@ class Room {
 
     private name : string;
     private bookings : {
-        name: Number,
+        name: number,
         email: string,
         checkin: Date,
         checkout: Date,
-        discount: Number
+        discount: number
     }[];
-    private rate : Number;
-    private discount : Number;
+    private rate : number;
+    private discount : number;
 
 
-    constructor(name : string, bookings : {name: Number,email: string, checkin: Date,checkout: Date, discount: Number}[],
-         rate : Number , discount : Number){
+    constructor(name : string, bookings : {name: number,email: string, checkin: Date,checkout: Date, discount: number}[],
+         rate : number , discount : number){
         this.name = name;
         this.bookings = bookings;
         this.rate = rate;
@@ -99,7 +99,13 @@ class Room {
 }
 
 class Booking {
-    constructor(name , email, checkin, checkout, discount, room){
+    private name : string;
+    private email: string;
+    private checkin : Date;
+    private checkout : Date;
+    private discount : number;
+    private room : { name : string , rate: number ,  discount : number};
+    constructor(name : string , email : string, checkin : Date , checkout : Date , discount : number, room : {name : string , rate : number , discount : number }){
         this.name = name;
         this.email = email;
         this.checkin = checkin;
